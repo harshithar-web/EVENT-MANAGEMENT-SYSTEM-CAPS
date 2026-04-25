@@ -1,0 +1,2154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CAPS Central — Event Management System</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #f4f6fa;
+  --white: #ffffff;
+  --surface: #ffffff;
+  --border: #e2e8f0;
+  --border-dark: #cbd5e1;
+  --text: #0f172a;
+  --text2: #475569;
+  --text3: #94a3b8;
+  --primary: #1e40af;
+  --primary-light: #eff6ff;
+  --primary-hover: #1d3a99;
+  --danger: #dc2626;
+  --danger-light: #fef2f2;
+  --success: #16a34a;
+  --success-light: #f0fdf4;
+  --warn: #d97706;
+  --warn-light: #fffbeb;
+  --gpt: #2563eb;
+  --gpt-light: #eff6ff;
+  --opt: #dc2626;
+  --opt-light: #fef2f2;
+  --paw: #16a34a;
+  --paw-light: #f0fdf4;
+  --connect: #d97706;
+  --connect-light: #fffbeb;
+  --radius: 8px;
+  --shadow: 0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.06);
+  --shadow-md: 0 4px 6px rgba(0,0,0,0.07), 0 2px 4px rgba(0,0,0,0.06);
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+/* ── LOADING ── */
+#loading-screen {
+  position: fixed; inset: 0;
+  background: var(--white);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.spinner {
+  width: 36px; height: 36px;
+  border: 3px solid var(--border);
+  border-top-color: var(--primary);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ── LOGIN ── */
+#login-screen {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg);
+}
+
+.login-container {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 40px;
+  width: 100%;
+  max-width: 400px;
+  box-shadow: var(--shadow-md);
+}
+
+.login-brand {
+  margin-bottom: 28px;
+  text-align: center;
+}
+
+.login-brand .institute {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--primary);
+  margin-bottom: 6px;
+}
+
+.login-brand h1 {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--text);
+  letter-spacing: -0.3px;
+}
+
+.login-brand p {
+  font-size: 13px;
+  color: var(--text2);
+  margin-top: 4px;
+}
+
+.divider {
+  height: 1px;
+  background: var(--border);
+  margin: 20px 0;
+}
+
+.form-group { margin-bottom: 16px; }
+
+.form-group label {
+  display: block;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text2);
+  margin-bottom: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.form-control {
+  width: 100%;
+  padding: 9px 12px;
+  border: 1px solid var(--border-dark);
+  border-radius: var(--radius);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  color: var(--text);
+  background: var(--white);
+  outline: none;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.form-control:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(30,64,175,0.1);
+}
+
+select.form-control { cursor: pointer; }
+textarea.form-control { resize: vertical; min-height: 80px; }
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 9px 16px;
+  border-radius: var(--radius);
+  border: 1px solid transparent;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.btn-primary {
+  background: var(--primary);
+  color: white;
+  border-color: var(--primary);
+}
+.btn-primary:hover { background: var(--primary-hover); }
+
+.btn-outline {
+  background: transparent;
+  color: var(--text2);
+  border-color: var(--border-dark);
+}
+.btn-outline:hover { border-color: var(--primary); color: var(--primary); background: var(--primary-light); }
+
+.btn-danger {
+  background: var(--danger-light);
+  color: var(--danger);
+  border-color: #fca5a5;
+}
+.btn-danger:hover { background: #fee2e2; }
+
+.btn-success {
+  background: var(--success-light);
+  color: var(--success);
+  border-color: #86efac;
+}
+.btn-success:hover { background: #dcfce7; }
+
+.btn-warn {
+  background: var(--warn-light);
+  color: var(--warn);
+  border-color: #fcd34d;
+}
+
+.btn-full { width: 100%; }
+
+.btn-sm { padding: 6px 12px; font-size: 12px; }
+.btn-xs { padding: 4px 9px; font-size: 11px; }
+
+.error-box {
+  background: var(--danger-light);
+  border: 1px solid #fca5a5;
+  color: var(--danger);
+  border-radius: var(--radius);
+  padding: 10px 14px;
+  font-size: 13px;
+  margin-top: 12px;
+  display: none;
+}
+
+/* ── APP SHELL ── */
+#app-shell { display: none; }
+
+.layout {
+  display: flex;
+  min-height: 100vh;
+}
+
+/* ── SIDEBAR ── */
+.sidebar {
+  width: 220px;
+  flex-shrink: 0;
+  background: var(--white);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  top: 0; left: 0; bottom: 0;
+  z-index: 50;
+}
+
+.sidebar-header {
+  padding: 18px 16px;
+  border-bottom: 1px solid var(--border);
+}
+
+.sidebar-header .brand-tag {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--primary);
+  margin-bottom: 4px;
+}
+
+.sidebar-header h2 {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text);
+  letter-spacing: -0.2px;
+}
+
+.sidebar-header p {
+  font-size: 11px;
+  color: var(--text3);
+  margin-top: 1px;
+}
+
+.sidebar-user {
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border);
+}
+
+.user-card {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.user-avatar {
+  width: 32px; height: 32px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.user-avatar.admin { background: var(--primary-light); color: var(--primary); }
+.user-avatar.gpt { background: var(--gpt-light); color: var(--gpt); }
+.user-avatar.opt { background: var(--opt-light); color: var(--opt); }
+.user-avatar.paw { background: var(--paw-light); color: var(--paw); }
+.user-avatar.connect { background: var(--connect-light); color: var(--connect); }
+.user-avatar.vol { background: #f3f4f6; color: var(--text2); }
+
+.user-name { font-size: 13px; font-weight: 600; color: var(--text); }
+.user-role { font-size: 11px; color: var(--text3); }
+
+.sidebar-nav {
+  flex: 1;
+  overflow-y: auto;
+  padding: 10px 10px;
+}
+
+.nav-label {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--text3);
+  padding: 8px 6px 4px;
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 8px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text2);
+  background: none;
+  border: none;
+  width: 100%;
+  text-align: left;
+  margin-bottom: 1px;
+  transition: all 0.12s;
+}
+
+.nav-item:hover { background: var(--bg); color: var(--text); }
+.nav-item.active { background: var(--primary-light); color: var(--primary); font-weight: 600; }
+
+.nav-icon {
+  width: 16px;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.sidebar-footer {
+  padding: 12px 16px;
+  border-top: 1px solid var(--border);
+}
+
+.logout-btn {
+  width: 100%;
+  padding: 8px;
+  background: none;
+  border: 1px solid var(--border-dark);
+  border-radius: 6px;
+  color: var(--text2);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.12s;
+}
+.logout-btn:hover { background: var(--danger-light); color: var(--danger); border-color: #fca5a5; }
+
+/* ── MAIN CONTENT ── */
+.main-content {
+  flex: 1;
+  margin-left: 220px;
+  padding: 28px;
+  min-height: 100vh;
+}
+
+.page { display: none; }
+.page.active { display: block; }
+
+/* ── PAGE HEADER ── */
+.page-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 22px;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.page-title h1 {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--text);
+  letter-spacing: -0.3px;
+}
+
+.page-title p {
+  font-size: 13px;
+  color: var(--text2);
+  margin-top: 2px;
+}
+
+/* ── STAT CARDS ── */
+.stats-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 14px;
+  margin-bottom: 22px;
+}
+
+.stat-card {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 18px;
+  box-shadow: var(--shadow);
+}
+
+.stat-card .stat-value {
+  font-size: 28px;
+  font-weight: 700;
+  font-family: 'DM Mono', monospace;
+  color: var(--text);
+  letter-spacing: -1px;
+  line-height: 1;
+}
+
+.stat-card .stat-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text2);
+  margin-top: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* ── SECTION CARD ── */
+.section-card {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  margin-bottom: 20px;
+  overflow: hidden;
+}
+
+.section-card-header {
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.section-card-header h3 {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.section-card-body { padding: 18px; }
+
+/* ── WINGS GRID ── */
+.wings-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 14px;
+  margin-bottom: 22px;
+}
+
+.wing-card {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-left-width: 3px;
+  border-radius: var(--radius);
+  padding: 18px;
+  box-shadow: var(--shadow);
+}
+
+.wing-card.gpt { border-left-color: var(--gpt); }
+.wing-card.opt { border-left-color: var(--opt); }
+.wing-card.paw { border-left-color: var(--paw); }
+.wing-card.connect { border-left-color: var(--connect); }
+
+.wing-title {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  margin-bottom: 12px;
+}
+
+.wing-card.gpt .wing-title { color: var(--gpt); }
+.wing-card.opt .wing-title { color: var(--opt); }
+.wing-card.paw .wing-title { color: var(--paw); }
+.wing-card.connect .wing-title { color: var(--connect); }
+
+.wing-metrics {
+  display: flex;
+  gap: 18px;
+}
+
+.wing-metric .val {
+  font-size: 20px;
+  font-weight: 700;
+  font-family: 'DM Mono', monospace;
+  color: var(--text);
+  line-height: 1;
+}
+
+.wing-metric .lbl {
+  font-size: 11px;
+  color: var(--text3);
+  margin-top: 3px;
+}
+
+/* ── TABLE ── */
+.table-wrap {
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+thead tr {
+  background: var(--bg);
+  border-bottom: 1px solid var(--border);
+}
+
+thead th {
+  padding: 10px 14px;
+  text-align: left;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text2);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+}
+
+tbody tr {
+  border-bottom: 1px solid var(--border);
+  transition: background 0.1s;
+}
+
+tbody tr:last-child { border-bottom: none; }
+tbody tr:hover { background: #fafbfc; }
+tbody tr.clickable { cursor: pointer; }
+
+tbody td {
+  padding: 11px 14px;
+  color: var(--text);
+  vertical-align: middle;
+}
+
+/* ── BADGES ── */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.2px;
+}
+
+.badge-gpt { background: var(--gpt-light); color: var(--gpt); }
+.badge-opt { background: var(--opt-light); color: var(--opt); }
+.badge-paw { background: var(--paw-light); color: var(--paw); }
+.badge-connect { background: var(--connect-light); color: var(--connect); }
+.badge-success { background: var(--success-light); color: var(--success); }
+.badge-warn { background: var(--warn-light); color: var(--warn); }
+.badge-danger { background: var(--danger-light); color: var(--danger); }
+.badge-neutral { background: #f1f5f9; color: var(--text2); }
+.badge-primary { background: var(--primary-light); color: var(--primary); }
+
+/* ── MODAL ── */
+.modal-overlay {
+  position: fixed; inset: 0;
+  background: rgba(15,23,42,0.4);
+  z-index: 200;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.modal-overlay.open { display: flex; }
+
+.modal {
+  background: var(--white);
+  border-radius: 10px;
+  width: 100%;
+  max-width: 520px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+}
+
+.modal-lg { max-width: 700px; }
+.modal-xl { max-width: 900px; }
+
+.modal-header {
+  padding: 18px 22px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.modal-header h3 { font-size: 16px; font-weight: 700; }
+
+.modal-close {
+  background: none;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+  color: var(--text3);
+  line-height: 1;
+  padding: 2px;
+  transition: color 0.12s;
+}
+.modal-close:hover { color: var(--text); }
+
+.modal-body { padding: 22px; }
+.modal-footer {
+  padding: 14px 22px;
+  border-top: 1px solid var(--border);
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+/* ── TOAST ── */
+.toast {
+  position: fixed;
+  bottom: 24px; right: 24px;
+  background: var(--text);
+  color: white;
+  padding: 12px 18px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  box-shadow: var(--shadow-md);
+  z-index: 9999;
+  transform: translateY(20px);
+  opacity: 0;
+  transition: all 0.25s;
+  max-width: 320px;
+}
+
+.toast.show { transform: translateY(0); opacity: 1; }
+.toast.success { background: var(--success); }
+.toast.error { background: var(--danger); }
+
+/* ── DETAIL VIEW ── */
+.detail-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--text2);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  margin-bottom: 18px;
+  border: none;
+  background: none;
+  padding: 0;
+  transition: color 0.12s;
+}
+.detail-back:hover { color: var(--primary); }
+
+.detail-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  margin-bottom: 16px;
+}
+
+.detail-item .lbl {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text3);
+  margin-bottom: 4px;
+}
+
+.detail-item .val {
+  font-size: 14px;
+  color: var(--text);
+  font-weight: 500;
+}
+
+.tabs {
+  display: flex;
+  gap: 0;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 18px;
+}
+
+.tab {
+  padding: 9px 16px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text2);
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  transition: all 0.12s;
+  background: none;
+  border-top: none;
+  border-left: none;
+  border-right: none;
+  font-family: 'DM Sans', sans-serif;
+}
+
+.tab:hover { color: var(--text); }
+.tab.active { color: var(--primary); border-bottom-color: var(--primary); }
+
+.tab-content { display: none; }
+.tab-content.active { display: block; }
+
+/* ── EMPTY STATE ── */
+.empty-state {
+  text-align: center;
+  padding: 40px 20px;
+  color: var(--text3);
+}
+
+.empty-state p { font-size: 14px; margin-top: 8px; }
+
+/* ── VOLUNTEER NAME ENTRY ── */
+.vol-name-card {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 36px 32px;
+  max-width: 400px;
+  margin: 0 auto;
+  box-shadow: var(--shadow-md);
+  text-align: center;
+}
+
+.vol-name-card h2 { font-size: 18px; font-weight: 700; margin-bottom: 6px; }
+.vol-name-card p { font-size: 13px; color: var(--text2); margin-bottom: 22px; }
+
+/* ── REPORT ── */
+#report-output {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 28px;
+  font-size: 13px;
+}
+
+#report-output h2 { font-size: 17px; font-weight: 700; margin-bottom: 4px; }
+#report-output h3 { font-size: 14px; font-weight: 700; margin: 18px 0 10px; color: var(--primary); }
+#report-output p { color: var(--text2); font-size: 12px; margin-bottom: 14px; }
+#report-output table { margin-bottom: 14px; }
+
+/* misc */
+.row { display: flex; gap: 10px; align-items: flex-end; flex-wrap: wrap; }
+.row .form-group { flex: 1; min-width: 140px; margin-bottom: 0; }
+.mt-12 { margin-top: 12px; }
+.mt-16 { margin-top: 16px; }
+.mb-16 { margin-bottom: 16px; }
+.text-sm { font-size: 12px; color: var(--text2); }
+.text-right { text-align: right; }
+.flex-between { display: flex; align-items: center; justify-content: space-between; }
+.flex-gap { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.mono { font-family: 'DM Mono', monospace; }
+
+@media print {
+  .sidebar, .page-header .btn, .tabs, .detail-back { display: none !important; }
+  .main-content { margin-left: 0; padding: 0; }
+}
+</style>
+</head>
+<body>
+
+<!-- LOADING -->
+<div id="loading-screen">
+  <div class="spinner"></div>
+  <p style="font-size:13px;color:#64748b;">Connecting to database...</p>
+</div>
+
+<!-- LOGIN -->
+<div id="login-screen" style="display:none;">
+  <div class="login-container">
+    <div class="login-brand">
+      <div class="institute">Christ University</div>
+      <h1>CAPS Central Campus</h1>
+      <p>Event Management System</p>
+    </div>
+    <div class="divider"></div>
+    <div class="form-group">
+      <label>Email Address</label>
+      <input type="email" id="login-email" class="form-control" placeholder="your@caps.edu">
+    </div>
+    <div class="form-group">
+      <label>Password</label>
+      <input type="password" id="login-password" class="form-control" placeholder="Enter password">
+    </div>
+    <div id="vol-name-group" class="form-group" style="display:none;">
+      <label>Your Name (Volunteers)</label>
+      <input type="text" id="login-vol-name" class="form-control" placeholder="Enter your full name">
+    </div>
+    <button class="btn btn-primary btn-full" onclick="doLogin()">Sign In</button>
+    <div id="login-error" class="error-box">Invalid email or password. Please try again.</div>
+  </div>
+</div>
+
+<!-- APP SHELL -->
+<div id="app-shell">
+  <div class="layout">
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <div class="brand-tag">CAPS</div>
+        <h2>Central Campus</h2>
+        <p>Event Management</p>
+      </div>
+      <div class="sidebar-user">
+        <div class="user-card">
+          <div class="user-avatar" id="sidebar-avatar">A</div>
+          <div>
+            <div class="user-name" id="sidebar-name">Admin</div>
+            <div class="user-role" id="sidebar-role">Administrator</div>
+          </div>
+        </div>
+      </div>
+      <nav class="sidebar-nav" id="sidebar-nav"></nav>
+      <div class="sidebar-footer">
+        <button class="logout-btn" onclick="doLogout()">Sign Out</button>
+      </div>
+    </aside>
+
+    <!-- MAIN -->
+    <main class="main-content">
+
+      <!-- ═══════════════════════════════════════════════ ADMIN PAGES ═══ -->
+
+      <!-- ADMIN DASHBOARD -->
+      <div id="page-admin-dashboard" class="page">
+        <div class="page-header">
+          <div class="page-title">
+            <h1>Dashboard</h1>
+            <p>Overview of all CAPS wings and activities</p>
+          </div>
+          <button class="btn btn-outline btn-sm" onclick="loadDashboard()">Refresh</button>
+        </div>
+        <div class="stats-row" id="admin-top-stats"></div>
+        <div style="margin-bottom:14px;font-size:13px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:0.5px;">Wings Overview</div>
+        <div class="wings-grid" id="admin-wings-grid"></div>
+      </div>
+
+      <!-- ADMIN WING LEADS -->
+      <div id="page-admin-leads" class="page">
+        <div class="page-header">
+          <div class="page-title">
+            <h1>Wing Leads</h1>
+            <p>Manage team leads for each wing</p>
+          </div>
+          <button class="btn btn-primary btn-sm" onclick="openModal('modal-add-lead')">Add Wing Lead</button>
+        </div>
+        <div class="section-card">
+          <div class="section-card-header">
+            <h3>Registered Wing Leads</h3>
+          </div>
+          <div class="table-wrap">
+            <table id="leads-table">
+              <thead><tr><th>Name</th><th>Email</th><th>Reg. No.</th><th>Wing</th><th>Actions</th></tr></thead>
+              <tbody id="leads-tbody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ADMIN EVENTS -->
+      <div id="page-admin-events" class="page">
+        <div id="admin-events-list-view">
+          <div class="page-header">
+            <div class="page-title"><h1>All Events</h1><p>View events across all wings</p></div>
+          </div>
+          <div class="section-card">
+            <div class="section-card-header">
+              <h3>Events</h3>
+              <div class="flex-gap">
+                <select class="form-control btn-sm" id="admin-filter-wing" onchange="loadAdminEvents()" style="width:auto;">
+                  <option value="">All Wings</option>
+                  <option value="GPT">GPT</option>
+                  <option value="OPT">OPT</option>
+                  <option value="PAW">PAW</option>
+                  <option value="Connect Wide">Connect Wide</option>
+                </select>
+              </div>
+            </div>
+            <div class="table-wrap">
+              <table>
+                <thead><tr><th>Event Name</th><th>Wing</th><th>Venue</th><th>Date</th><th>Beneficiaries</th><th>Deadlines Pending</th><th>Status</th></tr></thead>
+                <tbody id="admin-events-tbody"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+        <div id="admin-event-detail-view" style="display:none;"></div>
+      </div>
+
+      <!-- ADMIN DEADLINES -->
+      <div id="page-admin-deadlines" class="page">
+        <div class="page-header">
+          <div class="page-title"><h1>Deadlines</h1><p>All pending and completed deadlines</p></div>
+          <select class="form-control btn-sm" id="admin-filter-deadline-wing" onchange="loadAdminDeadlines()" style="width:160px;">
+            <option value="">All Wings</option>
+            <option value="GPT">GPT</option><option value="OPT">OPT</option>
+            <option value="PAW">PAW</option><option value="Connect Wide">Connect Wide</option>
+          </select>
+        </div>
+        <div class="section-card">
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Task</th><th>Event</th><th>Wing</th><th>Assigned To</th><th>Deadline</th><th>Notes</th><th>Status</th></tr></thead>
+              <tbody id="admin-deadlines-tbody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ADMIN VOLUNTEERS -->
+      <div id="page-admin-volunteers" class="page">
+        <div id="admin-vol-list-view">
+          <div class="page-header">
+            <div class="page-title"><h1>Volunteers</h1><p>All volunteers across wings</p></div>
+            <select class="form-control btn-sm" id="admin-filter-vol-wing" onchange="loadAdminVolunteers()" style="width:160px;">
+              <option value="">All Wings</option>
+              <option value="GPT">GPT</option><option value="OPT">OPT</option>
+              <option value="PAW">PAW</option><option value="Connect Wide">Connect Wide</option>
+            </select>
+          </div>
+          <div class="section-card">
+            <div class="table-wrap">
+              <table>
+                <thead><tr><th>Name</th><th>Email</th><th>Phone</th><th>Reg. No.</th><th>Wing</th><th>Roles</th></tr></thead>
+                <tbody id="admin-vol-tbody"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+        <div id="admin-vol-detail-view" style="display:none;"></div>
+      </div>
+
+      <!-- ADMIN REPORTS -->
+      <div id="page-admin-reports" class="page">
+        <div class="page-header">
+          <div class="page-title"><h1>Reports</h1><p>Generate and download reports</p></div>
+        </div>
+        <div class="section-card" style="margin-bottom:18px;">
+          <div class="section-card-body">
+            <div class="row" style="align-items:flex-end;gap:12px;">
+              <div class="form-group" style="margin-bottom:0;">
+                <label>Report Type</label>
+                <select class="form-control" id="report-type">
+                  <option value="monthly">Monthly Report</option>
+                  <option value="yearly">Yearly Report</option>
+                </select>
+              </div>
+              <div class="form-group" id="report-month-group" style="margin-bottom:0;">
+                <label>Month</label>
+                <input type="month" class="form-control" id="report-month">
+              </div>
+              <div class="form-group" id="report-year-group" style="margin-bottom:0;display:none;">
+                <label>Year</label>
+                <select class="form-control" id="report-year"></select>
+              </div>
+              <button class="btn btn-primary" onclick="generateReport()">Generate Report</button>
+              <button class="btn btn-outline" onclick="downloadReportPDF()">Download PDF</button>
+            </div>
+          </div>
+        </div>
+        <div id="report-output" style="display:none;"></div>
+      </div>
+
+      <!-- ═══════════════════════════════════════════════ LEAD PAGES ═══ -->
+
+      <!-- LEAD EVENTS -->
+      <div id="page-lead-events" class="page">
+        <div id="lead-events-list-view">
+          <div class="page-header">
+            <div class="page-title"><h1>Events</h1><p id="lead-events-subtitle"></p></div>
+            <button class="btn btn-primary btn-sm" onclick="openModal('modal-create-event')">Create Event</button>
+          </div>
+          <div class="section-card">
+            <div class="table-wrap">
+              <table>
+                <thead><tr><th>Event Name</th><th>Venue</th><th>Start Date</th><th>End Date</th><th>Beneficiaries</th><th>Status</th></tr></thead>
+                <tbody id="lead-events-tbody"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+        <div id="lead-event-detail-view" style="display:none;"></div>
+      </div>
+
+      <!-- LEAD VOLUNTEERS -->
+      <div id="page-lead-volunteers" class="page">
+        <div id="lead-vol-list-view">
+          <div class="page-header">
+            <div class="page-title"><h1>Volunteers</h1><p id="lead-vol-subtitle"></p></div>
+            <button class="btn btn-primary btn-sm" onclick="openModal('modal-add-volunteer')">Add Volunteer</button>
+          </div>
+          <div class="section-card">
+            <div class="table-wrap">
+              <table>
+                <thead><tr><th>Name</th><th>Email</th><th>Phone</th><th>Reg. No.</th><th>Roles Assigned</th></tr></thead>
+                <tbody id="lead-vol-tbody"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+        <div id="lead-vol-detail-view" style="display:none;"></div>
+      </div>
+
+      <!-- LEAD REPORTS -->
+      <div id="page-lead-reports" class="page">
+        <div class="page-header">
+          <div class="page-title"><h1>Wing Report</h1><p id="lead-report-subtitle"></p></div>
+        </div>
+        <div class="section-card" style="margin-bottom:18px;">
+          <div class="section-card-body">
+            <div class="row" style="gap:12px;align-items:flex-end;">
+              <div class="form-group" style="margin-bottom:0;">
+                <label>Report Type</label>
+                <select class="form-control" id="lead-report-type">
+                  <option value="monthly">Monthly</option>
+                  <option value="yearly">Yearly</option>
+                </select>
+              </div>
+              <div class="form-group" id="lead-report-month-group" style="margin-bottom:0;">
+                <label>Month</label>
+                <input type="month" class="form-control" id="lead-report-month">
+              </div>
+              <div class="form-group" id="lead-report-year-group" style="margin-bottom:0;display:none;">
+                <label>Year</label>
+                <select class="form-control" id="lead-report-year"></select>
+              </div>
+              <button class="btn btn-primary" onclick="generateLeadReport()">Generate</button>
+              <button class="btn btn-outline" onclick="downloadLeadReportPDF()">Download PDF</button>
+            </div>
+          </div>
+        </div>
+        <div id="lead-report-output" style="display:none;"></div>
+      </div>
+
+      <!-- ═══════════════════════════════════════════════ VOLUNTEER PAGE ═══ -->
+      <div id="page-volunteer-dashboard" class="page">
+        <div class="page-header">
+          <div class="page-title"><h1>My Dashboard</h1><p id="vol-dash-subtitle"></p></div>
+        </div>
+        <div class="stats-row" id="vol-top-stats"></div>
+        <div class="section-card" style="margin-bottom:18px;">
+          <div class="section-card-header"><h3>My Roles</h3></div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Role Title</th><th>Event</th><th>Description</th></tr></thead>
+              <tbody id="vol-roles-tbody"></tbody>
+            </table>
+          </div>
+        </div>
+        <div class="section-card">
+          <div class="section-card-header"><h3>My Deadlines</h3></div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Task</th><th>Event</th><th>Due Date</th><th>Notes</th><th>Status</th></tr></thead>
+              <tbody id="vol-deadlines-tbody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+    </main>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════ MODALS ═══ -->
+
+<!-- ADD WING LEAD -->
+<div class="modal-overlay" id="modal-add-lead">
+  <div class="modal">
+    <div class="modal-header">
+      <h3>Add Wing Lead</h3>
+      <button class="modal-close" onclick="closeModal('modal-add-lead')">&times;</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group"><label>Full Name</label><input type="text" class="form-control" id="lead-name"></div>
+      <div class="form-group"><label>Email</label><input type="email" class="form-control" id="lead-email"></div>
+      <div class="form-group"><label>Register Number</label><input type="text" class="form-control" id="lead-regno"></div>
+      <div class="form-group">
+        <label>Wing</label>
+        <select class="form-control" id="lead-wing">
+          <option value="">Select Wing</option>
+          <option value="GPT">GPT</option><option value="OPT">OPT</option>
+          <option value="PAW">PAW</option><option value="Connect Wide">Connect Wide</option>
+        </select>
+      </div>
+      <div class="form-group"><label>Password</label><input type="text" class="form-control" id="lead-password" placeholder="Login password for this lead"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal('modal-add-lead')">Cancel</button>
+      <button class="btn btn-primary" onclick="addWingLead()">Add Lead</button>
+    </div>
+  </div>
+</div>
+
+<!-- CREATE EVENT -->
+<div class="modal-overlay" id="modal-create-event">
+  <div class="modal">
+    <div class="modal-header">
+      <h3>Create New Event</h3>
+      <button class="modal-close" onclick="closeModal('modal-create-event')">&times;</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group"><label>Event Name</label><input type="text" class="form-control" id="ev-name"></div>
+      <div class="form-group"><label>Venue</label><input type="text" class="form-control" id="ev-venue"></div>
+      <div class="row">
+        <div class="form-group"><label>Start Date</label><input type="date" class="form-control" id="ev-start"></div>
+        <div class="form-group"><label>End Date</label><input type="date" class="form-control" id="ev-end"></div>
+      </div>
+      <div class="form-group"><label>Description</label><textarea class="form-control" id="ev-desc"></textarea></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal('modal-create-event')">Cancel</button>
+      <button class="btn btn-primary" onclick="createEvent()">Create Event</button>
+    </div>
+  </div>
+</div>
+
+<!-- ADD ROLE -->
+<div class="modal-overlay" id="modal-add-role">
+  <div class="modal">
+    <div class="modal-header">
+      <h3>Add Role to Event</h3>
+      <button class="modal-close" onclick="closeModal('modal-add-role')">&times;</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group"><label>Role Title</label><input type="text" class="form-control" id="role-title"></div>
+      <div class="form-group">
+        <label>Assign Volunteer</label>
+        <select class="form-control" id="role-volunteer"></select>
+      </div>
+      <div class="form-group"><label>Role Description</label><textarea class="form-control" id="role-desc"></textarea></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal('modal-add-role')">Cancel</button>
+      <button class="btn btn-primary" onclick="addRole()">Add Role</button>
+    </div>
+  </div>
+</div>
+
+<!-- ADD DEADLINE -->
+<div class="modal-overlay" id="modal-add-deadline">
+  <div class="modal">
+    <div class="modal-header">
+      <h3>Add Deadline</h3>
+      <button class="modal-close" onclick="closeModal('modal-add-deadline')">&times;</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group"><label>Task Name</label><input type="text" class="form-control" id="dl-task"></div>
+      <div class="form-group"><label>Deadline Date</label><input type="date" class="form-control" id="dl-date"></div>
+      <div class="form-group">
+        <label>Assign To</label>
+        <select class="form-control" id="dl-volunteer"></select>
+      </div>
+      <div class="form-group"><label>Notes</label><textarea class="form-control" id="dl-notes"></textarea></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal('modal-add-deadline')">Cancel</button>
+      <button class="btn btn-primary" onclick="addDeadline()">Add Deadline</button>
+    </div>
+  </div>
+</div>
+
+<!-- UPDATE BENEFICIARIES -->
+<div class="modal-overlay" id="modal-beneficiaries">
+  <div class="modal">
+    <div class="modal-header">
+      <h3>Update Beneficiaries</h3>
+      <button class="modal-close" onclick="closeModal('modal-beneficiaries')">&times;</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label>Number of Beneficiaries</label>
+        <input type="number" class="form-control" id="ben-count" min="0" placeholder="Enter count">
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal('modal-beneficiaries')">Cancel</button>
+      <button class="btn btn-primary" onclick="updateBeneficiaries()">Update</button>
+    </div>
+  </div>
+</div>
+
+<!-- ADD VOLUNTEER -->
+<div class="modal-overlay" id="modal-add-volunteer">
+  <div class="modal">
+    <div class="modal-header">
+      <h3>Add Volunteer</h3>
+      <button class="modal-close" onclick="closeModal('modal-add-volunteer')">&times;</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group"><label>Full Name</label><input type="text" class="form-control" id="vol-name"></div>
+      <div class="form-group"><label>Email</label><input type="email" class="form-control" id="vol-email"></div>
+      <div class="form-group"><label>Phone Number</label><input type="text" class="form-control" id="vol-phone"></div>
+      <div class="form-group"><label>Register Number</label><input type="text" class="form-control" id="vol-regno"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal('modal-add-volunteer')">Cancel</button>
+      <button class="btn btn-primary" onclick="addVolunteer()">Add Volunteer</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<!-- ═══════════════════════════════════════════ SCRIPT ═══ -->
+<script>
+// ══════════════════════════════════════════════════════════
+// CONFIGURATION — Replace with your Apps Script Web App URL
+// ══════════════════════════════════════════════════════════
+const SCRIPT_URL = 'YOUR_APPS_SCRIPT_WEB_APP_URL_HERE';
+
+// ─── STATE ───
+let currentUser = null;   // { role, wing, name, email }
+let appData = {};         // all data loaded from sheets
+let selectedEventId = null;
+let selectedVolId = null;
+
+// ─── CREDENTIALS ───
+const CREDENTIALS = {
+  'admin@caps.edu':        { password: 'admin123',      role: 'admin',     wing: null,           name: 'Administrator' },
+  'gpt@caps.edu':          { password: 'gpt123',        role: 'lead',      wing: 'GPT',          name: 'GPT Lead' },
+  'opt@caps.edu':          { password: 'opt123',        role: 'lead',      wing: 'OPT',          name: 'OPT Lead' },
+  'paw@caps.edu':          { password: 'paw123',        role: 'lead',      wing: 'PAW',          name: 'PAW Lead' },
+  'connect@caps.edu':      { password: 'connect123',    role: 'lead',      wing: 'Connect Wide', name: 'Connect Wide Lead' },
+  'gptvol@caps.edu':       { password: 'gptvol123',     role: 'volunteer', wing: 'GPT',          name: 'GPT Volunteer' },
+  'optvol@caps.edu':       { password: 'optvol123',     role: 'volunteer', wing: 'OPT',          name: 'OPT Volunteer' },
+  'pawvol@caps.edu':       { password: 'pawvol123',     role: 'volunteer', wing: 'PAW',          name: 'PAW Volunteer' },
+  'connectvol@caps.edu':   { password: 'connectvol123', role: 'volunteer', wing: 'Connect Wide', name: 'Connect Wide Volunteer' },
+};
+
+// ─── INIT ───
+window.onload = async () => {
+  const today = new Date();
+  document.getElementById('report-month').value = today.toISOString().slice(0,7);
+  document.getElementById('lead-report-month').value = today.toISOString().slice(0,7);
+  const yr = today.getFullYear();
+  for (let y = yr; y >= yr-5; y--) {
+    document.getElementById('report-year').innerHTML += `<option value="${y}">${y}</option>`;
+    document.getElementById('lead-report-year').innerHTML += `<option value="${y}">${y}</option>`;
+  }
+  document.getElementById('report-type').onchange = () => {
+    const v = document.getElementById('report-type').value;
+    document.getElementById('report-month-group').style.display = v === 'monthly' ? '' : 'none';
+    document.getElementById('report-year-group').style.display  = v === 'yearly'  ? '' : 'none';
+  };
+  document.getElementById('lead-report-type').onchange = () => {
+    const v = document.getElementById('lead-report-type').value;
+    document.getElementById('lead-report-month-group').style.display = v === 'monthly' ? '' : 'none';
+    document.getElementById('lead-report-year-group').style.display  = v === 'yearly'  ? '' : 'none';
+  };
+
+  // Email input watch for volunteer login name field
+  document.getElementById('login-email').addEventListener('input', function() {
+    const cred = CREDENTIALS[this.value.trim().toLowerCase()];
+    const isVol = cred && cred.role === 'volunteer';
+    document.getElementById('vol-name-group').style.display = isVol ? '' : 'none';
+  });
+
+  await loadAllData();
+  document.getElementById('loading-screen').style.display = 'none';
+  document.getElementById('login-screen').style.display = 'flex';
+};
+
+// ─── API CALL ───
+async function apiCall(action, params = {}) {
+  try {
+    const url = SCRIPT_URL + '?action=' + action + '&' + new URLSearchParams(params).toString();
+    const res  = await fetch(url);
+    const json = await res.json();
+    if (json.success) return json.data;
+    throw new Error(json.error || 'Unknown error');
+  } catch(e) {
+    console.error('API error:', e);
+    return null;
+  }
+}
+
+async function apiPost(action, body = {}) {
+  try {
+    const fd = new FormData();
+    fd.append('action', action);
+    for (const [k, v] of Object.entries(body)) fd.append(k, v);
+    const res  = await fetch(SCRIPT_URL, { method: 'POST', body: fd });
+    const json = await res.json();
+    if (json.success) return json.data;
+    throw new Error(json.error || 'Unknown error');
+  } catch(e) {
+    console.error('API error:', e);
+    return null;
+  }
+}
+
+// ─── LOAD ALL DATA ───
+async function loadAllData() {
+  const [events, volunteers, roles, deadlines, leads] = await Promise.all([
+    apiCall('getEvents'),
+    apiCall('getVolunteers'),
+    apiCall('getRoles'),
+    apiCall('getDeadlines'),
+    apiCall('getLeads'),
+  ]);
+  appData.events     = events     || [];
+  appData.volunteers = volunteers || [];
+  appData.roles      = roles      || [];
+  appData.deadlines  = deadlines  || [];
+  appData.leads      = leads      || [];
+}
+
+// ─── LOGIN ───
+function doLogin() {
+  const email    = document.getElementById('login-email').value.trim().toLowerCase();
+  const password = document.getElementById('login-password').value;
+  const volName  = document.getElementById('login-vol-name').value.trim();
+  const cred     = CREDENTIALS[email];
+
+  document.getElementById('login-error').style.display = 'none';
+
+  if (!cred || cred.password !== password) {
+    document.getElementById('login-error').style.display = 'block';
+    return;
+  }
+
+  if (cred.role === 'volunteer' && !volName) {
+    showToast('Please enter your name.', 'error');
+    return;
+  }
+
+  currentUser = {
+    role:  cred.role,
+    wing:  cred.wing,
+    name:  cred.role === 'volunteer' ? volName : cred.name,
+    email: email,
+  };
+
+  document.getElementById('login-screen').style.display = 'none';
+  document.getElementById('app-shell').style.display    = 'block';
+
+  setupSidebar();
+  navigateTo(currentUser.role === 'admin' ? 'admin-dashboard'
+           : currentUser.role === 'lead'  ? 'lead-events'
+           : 'volunteer-dashboard');
+}
+
+function doLogout() {
+  currentUser = null;
+  document.getElementById('app-shell').style.display    = 'none';
+  document.getElementById('login-screen').style.display = 'flex';
+  document.getElementById('login-email').value    = '';
+  document.getElementById('login-password').value = '';
+  document.getElementById('login-vol-name').value = '';
+  document.getElementById('vol-name-group').style.display = 'none';
+}
+
+// ─── SIDEBAR ───
+const NAV = {
+  admin: [
+    { id: 'admin-dashboard', label: 'Dashboard',   icon: '▦' },
+    { id: 'admin-leads',     label: 'Wing Leads',  icon: '◈' },
+    { id: 'admin-events',    label: 'Events',      icon: '◻' },
+    { id: 'admin-deadlines', label: 'Deadlines',   icon: '◷' },
+    { id: 'admin-volunteers',label: 'Volunteers',  icon: '◉' },
+    { id: 'admin-reports',   label: 'Reports',     icon: '◫' },
+  ],
+  lead: [
+    { id: 'lead-events',     label: 'Events',      icon: '◻' },
+    { id: 'lead-volunteers', label: 'Volunteers',  icon: '◉' },
+    { id: 'lead-reports',    label: 'Reports',     icon: '◫' },
+  ],
+  volunteer: [
+    { id: 'volunteer-dashboard', label: 'My Dashboard', icon: '▦' },
+  ],
+};
+
+function setupSidebar() {
+  const u = currentUser;
+  const av = document.getElementById('sidebar-avatar');
+  av.className = 'user-avatar ' + (u.role === 'admin' ? 'admin' : u.role === 'lead' ? u.wing.toLowerCase().replace(' ','') : 'vol');
+  av.textContent = u.name.charAt(0).toUpperCase();
+  document.getElementById('sidebar-name').textContent = u.name;
+  document.getElementById('sidebar-role').textContent =
+    u.role === 'admin' ? 'Administrator'
+    : u.role === 'lead' ? u.wing + ' Team Lead'
+    : u.wing + ' Volunteer';
+
+  const nav = document.getElementById('sidebar-nav');
+  nav.innerHTML = '';
+  (NAV[u.role] || []).forEach(item => {
+    const btn = document.createElement('button');
+    btn.className = 'nav-item';
+    btn.dataset.page = item.id;
+    btn.innerHTML = `<span class="nav-icon">${item.icon}</span>${item.label}`;
+    btn.onclick = () => navigateTo(item.id);
+    nav.appendChild(btn);
+  });
+}
+
+// ─── NAVIGATION ───
+function navigateTo(pageId) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => {
+    n.classList.toggle('active', n.dataset.page === pageId);
+  });
+  const page = document.getElementById('page-' + pageId);
+  if (page) page.classList.add('active');
+
+  // Reset detail views
+  document.querySelectorAll('[id$="-list-view"]').forEach(v => v.style.display = '');
+  document.querySelectorAll('[id$="-detail-view"]').forEach(v => v.style.display = 'none');
+
+  // Page-specific load
+  switch(pageId) {
+    case 'admin-dashboard':   loadDashboard(); break;
+    case 'admin-leads':       loadLeads(); break;
+    case 'admin-events':      loadAdminEvents(); break;
+    case 'admin-deadlines':   loadAdminDeadlines(); break;
+    case 'admin-volunteers':  loadAdminVolunteers(); break;
+    case 'admin-reports':     break;
+    case 'lead-events':       loadLeadEvents(); break;
+    case 'lead-volunteers':   loadLeadVolunteers(); break;
+    case 'lead-reports':      break;
+    case 'volunteer-dashboard': loadVolunteerDashboard(); break;
+  }
+}
+
+// ─── HELPERS ───
+function wing2class(w) {
+  if (!w) return '';
+  const m = { 'GPT':'gpt', 'OPT':'opt', 'PAW':'paw', 'Connect Wide':'connect' };
+  return m[w] || '';
+}
+
+function wingBadge(w) {
+  return `<span class="badge badge-${wing2class(w)}">${w}</span>`;
+}
+
+function statusBadge(s) {
+  if (s === 'Completed') return `<span class="badge badge-success">Completed</span>`;
+  if (s === 'Pending')   return `<span class="badge badge-warn">Pending</span>`;
+  return `<span class="badge badge-neutral">${s || 'Pending'}</span>`;
+}
+
+function fmtDate(d) {
+  if (!d) return '—';
+  return new Date(d).toLocaleDateString('en-GB', { day:'2-digit', month:'short', year:'numeric' });
+}
+
+function emptyRow(cols, msg) {
+  return `<tr><td colspan="${cols}" class="empty-state" style="text-align:center;padding:28px;color:var(--text3);">${msg}</td></tr>`;
+}
+
+function showToast(msg, type = '') {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast show ' + type;
+  setTimeout(() => t.className = 'toast', 3000);
+}
+
+function openModal(id) { document.getElementById(id).classList.add('open'); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+
+// ─── DASHBOARD ───
+async function loadDashboard() {
+  await loadAllData();
+  const events = appData.events, vols = appData.volunteers, dls = appData.deadlines;
+  const totalEvents = events.length;
+  const totalVols   = vols.length;
+  const pendingDls  = dls.filter(d => !d.status || d.status === 'Pending').length;
+
+  document.getElementById('admin-top-stats').innerHTML = `
+    <div class="stat-card"><div class="stat-value">${totalEvents}</div><div class="stat-label">Total Events</div></div>
+    <div class="stat-card"><div class="stat-value">${totalVols}</div><div class="stat-label">Total Volunteers</div></div>
+    <div class="stat-card"><div class="stat-value">${pendingDls}</div><div class="stat-label">Deadlines Pending</div></div>
+  `;
+
+  const wings = ['GPT','OPT','PAW','Connect Wide'];
+  document.getElementById('admin-wings-grid').innerHTML = wings.map(w => {
+    const wc = wing2class(w);
+    const we = events.filter(e => e.wing === w).length;
+    const wv = vols.filter(v => v.wing === w).length;
+    const wd = dls.filter(d => d.wing === w && (!d.status || d.status === 'Pending')).length;
+    return `
+      <div class="wing-card ${wc}">
+        <div class="wing-title">${w}</div>
+        <div class="wing-metrics">
+          <div class="wing-metric"><div class="val">${we}</div><div class="lbl">Events</div></div>
+          <div class="wing-metric"><div class="val">${wv}</div><div class="lbl">Volunteers</div></div>
+          <div class="wing-metric"><div class="val">${wd}</div><div class="lbl">Deadlines Pending</div></div>
+        </div>
+      </div>`;
+  }).join('');
+}
+
+// ─── LEADS ───
+async function loadLeads() {
+  await loadAllData();
+  const tbody = document.getElementById('leads-tbody');
+  if (!appData.leads.length) { tbody.innerHTML = emptyRow(5, 'No wing leads added yet.'); return; }
+  tbody.innerHTML = appData.leads.map(l => `
+    <tr>
+      <td>${l.name}</td>
+      <td>${l.email}</td>
+      <td>${l.regno}</td>
+      <td>${wingBadge(l.wing)}</td>
+      <td>
+        <button class="btn btn-danger btn-xs" onclick="deleteLead('${l.id}')">Remove</button>
+      </td>
+    </tr>
+  `).join('');
+}
+
+async function addWingLead() {
+  const name = document.getElementById('lead-name').value.trim();
+  const email = document.getElementById('lead-email').value.trim();
+  const regno = document.getElementById('lead-regno').value.trim();
+  const wing  = document.getElementById('lead-wing').value;
+  const pwd   = document.getElementById('lead-password').value.trim();
+  if (!name || !email || !regno || !wing || !pwd) { showToast('All fields required.', 'error'); return; }
+
+  const res = await apiPost('addLead', { name, email, regno, wing, password: pwd });
+  if (res !== null) {
+    closeModal('modal-add-lead');
+    ['lead-name','lead-email','lead-regno','lead-password'].forEach(id => document.getElementById(id).value = '');
+    document.getElementById('lead-wing').value = '';
+    showToast('Wing lead added.', 'success');
+    await loadLeads();
+  } else {
+    showToast('Failed to add lead.', 'error');
+  }
+}
+
+async function deleteLead(id) {
+  if (!confirm('Remove this wing lead?')) return;
+  const res = await apiPost('deleteLead', { id });
+  if (res !== null) { showToast('Lead removed.', 'success'); await loadLeads(); }
+  else showToast('Failed to remove.', 'error');
+}
+
+// ─── ADMIN EVENTS ───
+async function loadAdminEvents() {
+  await loadAllData();
+  const filter = document.getElementById('admin-filter-wing').value;
+  let events = appData.events;
+  if (filter) events = events.filter(e => e.wing === filter);
+
+  const tbody = document.getElementById('admin-events-tbody');
+  if (!events.length) { tbody.innerHTML = emptyRow(7, 'No events found.'); return; }
+  tbody.innerHTML = events.map(e => {
+    const pending = appData.deadlines.filter(d => d.eventId === e.id && (!d.status || d.status === 'Pending')).length;
+    return `
+      <tr class="clickable" onclick="showAdminEventDetail('${e.id}')">
+        <td style="font-weight:600;">${e.name}</td>
+        <td>${wingBadge(e.wing)}</td>
+        <td>${e.venue || '—'}</td>
+        <td>${fmtDate(e.startDate)}</td>
+        <td>${e.beneficiaries || 0}</td>
+        <td>${pending > 0 ? `<span class="badge badge-warn">${pending} pending</span>` : '<span class="badge badge-success">None</span>'}</td>
+        <td>${statusBadge(e.status)}</td>
+      </tr>`;
+  }).join('');
+}
+
+function showAdminEventDetail(eventId) {
+  const event = appData.events.find(e => e.id === eventId);
+  if (!event) return;
+  const roles = appData.roles.filter(r => r.eventId === eventId);
+  const deadlines = appData.deadlines.filter(d => d.eventId === eventId);
+
+  document.getElementById('admin-events-list-view').style.display = 'none';
+  const detail = document.getElementById('admin-event-detail-view');
+  detail.style.display = '';
+  detail.innerHTML = `
+    <button class="detail-back" onclick="document.getElementById('admin-events-list-view').style.display='';document.getElementById('admin-event-detail-view').style.display='none';">
+      &larr; Back to Events
+    </button>
+    <div class="page-header">
+      <div class="page-title">
+        <h1>${event.name}</h1>
+        <p>${wingBadge(event.wing)} &nbsp; ${event.venue || ''}</p>
+      </div>
+      ${statusBadge(event.status)}
+    </div>
+    <div class="detail-grid" style="margin-bottom:18px;">
+      <div class="detail-item"><div class="lbl">Start Date</div><div class="val">${fmtDate(event.startDate)}</div></div>
+      <div class="detail-item"><div class="lbl">End Date</div><div class="val">${fmtDate(event.endDate)}</div></div>
+      <div class="detail-item"><div class="lbl">Beneficiaries</div><div class="val">${event.beneficiaries || 0}</div></div>
+      <div class="detail-item"><div class="lbl">Description</div><div class="val">${event.description || '—'}</div></div>
+    </div>
+    <div class="tabs">
+      <button class="tab active" onclick="switchTab(this,'tab-ev-roles-admin')">Roles (${roles.length})</button>
+      <button class="tab" onclick="switchTab(this,'tab-ev-deadlines-admin')">Deadlines (${deadlines.length})</button>
+    </div>
+    <div id="tab-ev-roles-admin" class="tab-content active">
+      <div class="section-card">
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Role Title</th><th>Volunteer</th><th>Description</th></tr></thead>
+            <tbody>
+              ${roles.length ? roles.map(r=>`<tr><td><strong>${r.title}</strong></td><td>${r.volunteerName||'—'}</td><td>${r.description||'—'}</td></tr>`).join('') : emptyRow(3,'No roles assigned.')}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    <div id="tab-ev-deadlines-admin" class="tab-content">
+      <div class="section-card">
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Task</th><th>Assigned To</th><th>Due Date</th><th>Notes</th><th>Status</th></tr></thead>
+            <tbody>
+              ${deadlines.length ? deadlines.map(d=>`<tr><td>${d.task}</td><td>${d.volunteerName||'—'}</td><td>${fmtDate(d.date)}</td><td>${d.notes||'—'}</td><td>${statusBadge(d.status)}</td></tr>`).join('') : emptyRow(5,'No deadlines.')}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+// ─── ADMIN DEADLINES ───
+async function loadAdminDeadlines() {
+  await loadAllData();
+  const filter = document.getElementById('admin-filter-deadline-wing').value;
+  let dls = appData.deadlines;
+  if (filter) dls = dls.filter(d => d.wing === filter);
+  const tbody = document.getElementById('admin-deadlines-tbody');
+  if (!dls.length) { tbody.innerHTML = emptyRow(7, 'No deadlines found.'); return; }
+  tbody.innerHTML = dls.map(d => `
+    <tr>
+      <td>${d.task}</td>
+      <td>${d.eventName || '—'}</td>
+      <td>${wingBadge(d.wing)}</td>
+      <td>${d.volunteerName || '—'}</td>
+      <td>${fmtDate(d.date)}</td>
+      <td>${d.notes || '—'}</td>
+      <td>${statusBadge(d.status)}</td>
+    </tr>
+  `).join('');
+}
+
+// ─── ADMIN VOLUNTEERS ───
+async function loadAdminVolunteers() {
+  await loadAllData();
+  const filter = document.getElementById('admin-filter-vol-wing').value;
+  let vols = appData.volunteers;
+  if (filter) vols = vols.filter(v => v.wing === filter);
+  const tbody = document.getElementById('admin-vol-tbody');
+  if (!vols.length) { tbody.innerHTML = emptyRow(6, 'No volunteers found.'); return; }
+  tbody.innerHTML = vols.map(v => {
+    const roleCount = appData.roles.filter(r => r.volunteerId === v.id).length;
+    return `
+      <tr class="clickable" onclick="showAdminVolDetail('${v.id}')">
+        <td style="font-weight:600;">${v.name}</td>
+        <td>${v.email}</td>
+        <td>${v.phone}</td>
+        <td>${v.regno}</td>
+        <td>${wingBadge(v.wing)}</td>
+        <td><span class="badge badge-primary">${roleCount} role${roleCount!==1?'s':''}</span></td>
+      </tr>`;
+  }).join('');
+}
+
+function showAdminVolDetail(volId) {
+  const vol = appData.volunteers.find(v => v.id === volId);
+  if (!vol) return;
+  const roles = appData.roles.filter(r => r.volunteerId === volId);
+  const dls   = appData.deadlines.filter(d => d.volunteerId === volId);
+
+  document.getElementById('admin-vol-list-view').style.display = 'none';
+  const detail = document.getElementById('admin-vol-detail-view');
+  detail.style.display = '';
+  detail.innerHTML = `
+    <button class="detail-back" onclick="document.getElementById('admin-vol-list-view').style.display='';document.getElementById('admin-vol-detail-view').style.display='none';">
+      &larr; Back to Volunteers
+    </button>
+    <div class="page-header">
+      <div class="page-title"><h1>${vol.name}</h1><p>${wingBadge(vol.wing)} &nbsp; ${vol.email} &nbsp; ${vol.phone}</p></div>
+    </div>
+    <div class="tabs">
+      <button class="tab active" onclick="switchTab(this,'tab-vol-roles-admin')">Roles (${roles.length})</button>
+      <button class="tab" onclick="switchTab(this,'tab-vol-dls-admin')">Deadlines (${dls.length})</button>
+    </div>
+    <div id="tab-vol-roles-admin" class="tab-content active">
+      <div class="section-card">
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Role</th><th>Event</th><th>Description</th></tr></thead>
+            <tbody>
+              ${roles.length ? roles.map(r=>`<tr><td><strong>${r.title}</strong></td><td>${r.eventName||'—'}</td><td>${r.description||'—'}</td></tr>`).join('') : emptyRow(3,'No roles.')}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    <div id="tab-vol-dls-admin" class="tab-content">
+      <div class="section-card">
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Task</th><th>Event</th><th>Due Date</th><th>Notes</th><th>Status</th></tr></thead>
+            <tbody>
+              ${dls.length ? dls.map(d=>`<tr><td>${d.task}</td><td>${d.eventName||'—'}</td><td>${fmtDate(d.date)}</td><td>${d.notes||'—'}</td><td>${statusBadge(d.status)}</td></tr>`).join('') : emptyRow(5,'No deadlines.')}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+// ─── LEAD EVENTS ───
+async function loadLeadEvents() {
+  await loadAllData();
+  document.getElementById('lead-events-subtitle').textContent = currentUser.wing + ' Wing Events';
+  const events = appData.events.filter(e => e.wing === currentUser.wing);
+  const tbody  = document.getElementById('lead-events-tbody');
+  if (!events.length) { tbody.innerHTML = emptyRow(6, 'No events created yet. Create your first event.'); return; }
+  tbody.innerHTML = events.map(e => `
+    <tr class="clickable" onclick="showLeadEventDetail('${e.id}')">
+      <td style="font-weight:600;">${e.name}</td>
+      <td>${e.venue || '—'}</td>
+      <td>${fmtDate(e.startDate)}</td>
+      <td>${fmtDate(e.endDate)}</td>
+      <td>${e.beneficiaries || 0}</td>
+      <td>${statusBadge(e.status)}</td>
+    </tr>`).join('');
+}
+
+function showLeadEventDetail(eventId) {
+  selectedEventId = eventId;
+  const event = appData.events.find(e => e.id === eventId);
+  if (!event) return;
+  const roles     = appData.roles.filter(r => r.eventId === eventId);
+  const deadlines = appData.deadlines.filter(d => d.eventId === eventId);
+
+  document.getElementById('lead-events-list-view').style.display = 'none';
+  const detail = document.getElementById('lead-event-detail-view');
+  detail.style.display = '';
+  detail.innerHTML = `
+    <button class="detail-back" onclick="loadLeadEvents();document.getElementById('lead-events-list-view').style.display='';document.getElementById('lead-event-detail-view').style.display='none';">
+      &larr; Back to Events
+    </button>
+    <div class="page-header">
+      <div class="page-title"><h1>${event.name}</h1><p>${event.venue || ''}</p></div>
+      <div class="flex-gap">
+        <button class="btn btn-outline btn-sm" onclick="openModal('modal-add-role');populateVolDropdowns()">Add Role</button>
+        <button class="btn btn-outline btn-sm" onclick="openModal('modal-add-deadline');populateVolDropdowns()">Add Deadline</button>
+        <button class="btn btn-warn btn-sm" onclick="openModal('modal-beneficiaries');document.getElementById('ben-count').value='${event.beneficiaries||0}'">Update Beneficiaries</button>
+        ${event.status !== 'Completed' ? `<button class="btn btn-success btn-sm" onclick="markEventCompleted('${event.id}')">Mark Completed</button>` : `<span class="badge badge-success">Completed</span>`}
+      </div>
+    </div>
+    <div class="detail-grid" style="margin-bottom:18px;">
+      <div class="detail-item"><div class="lbl">Start Date</div><div class="val">${fmtDate(event.startDate)}</div></div>
+      <div class="detail-item"><div class="lbl">End Date</div><div class="val">${fmtDate(event.endDate)}</div></div>
+      <div class="detail-item"><div class="lbl">Beneficiaries</div><div class="val">${event.beneficiaries || 0}</div></div>
+      <div class="detail-item"><div class="lbl">Description</div><div class="val">${event.description || '—'}</div></div>
+    </div>
+    <div class="tabs">
+      <button class="tab active" onclick="switchTab(this,'tab-ev-roles')">Roles (${roles.length})</button>
+      <button class="tab" onclick="switchTab(this,'tab-ev-deadlines')">Deadlines (${deadlines.length})</button>
+    </div>
+    <div id="tab-ev-roles" class="tab-content active">
+      <div class="section-card">
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Role Title</th><th>Volunteer</th><th>Description</th></tr></thead>
+            <tbody>
+              ${roles.length ? roles.map(r=>`<tr><td><strong>${r.title}</strong></td><td>${r.volunteerName||'—'}</td><td>${r.description||'—'}</td></tr>`).join('') : emptyRow(3,'No roles yet. Use "Add Role" above.')}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    <div id="tab-ev-deadlines" class="tab-content">
+      <div class="section-card">
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Task</th><th>Assigned To</th><th>Due Date</th><th>Notes</th><th>Status</th></tr></thead>
+            <tbody>
+              ${deadlines.length ? deadlines.map(d=>`
+                <tr>
+                  <td>${d.task}</td><td>${d.volunteerName||'—'}</td><td>${fmtDate(d.date)}</td><td>${d.notes||'—'}</td>
+                  <td>
+                    ${d.status === 'Completed'
+                      ? `<span class="badge badge-success">Completed</span>`
+                      : `<button class="btn btn-success btn-xs" onclick="markDeadlineDone('${d.id}')">Mark Done</button>`}
+                  </td>
+                </tr>`).join('') : emptyRow(5,'No deadlines yet.')}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function populateVolDropdowns() {
+  const vols = appData.volunteers.filter(v => v.wing === currentUser.wing);
+  const opts = vols.length
+    ? '<option value="">Select Volunteer</option>' + vols.map(v => `<option value="${v.id}">${v.name}</option>`).join('')
+    : '<option value="">No volunteers added yet</option>';
+  document.getElementById('role-volunteer').innerHTML = opts;
+  document.getElementById('dl-volunteer').innerHTML   = opts;
+}
+
+async function createEvent() {
+  const name  = document.getElementById('ev-name').value.trim();
+  const venue = document.getElementById('ev-venue').value.trim();
+  const start = document.getElementById('ev-start').value;
+  const end   = document.getElementById('ev-end').value;
+  const desc  = document.getElementById('ev-desc').value.trim();
+  if (!name || !venue || !start || !end) { showToast('Please fill all required fields.', 'error'); return; }
+
+  const res = await apiPost('addEvent', { name, venue, startDate: start, endDate: end, description: desc, wing: currentUser.wing });
+  if (res !== null) {
+    closeModal('modal-create-event');
+    ['ev-name','ev-venue','ev-start','ev-end','ev-desc'].forEach(id => document.getElementById(id).value = '');
+    showToast('Event created.', 'success');
+    await loadLeadEvents();
+  } else showToast('Failed to create event.', 'error');
+}
+
+async function addRole() {
+  const title  = document.getElementById('role-title').value.trim();
+  const volId  = document.getElementById('role-volunteer').value;
+  const desc   = document.getElementById('role-desc').value.trim();
+  if (!title || !volId) { showToast('Title and volunteer required.', 'error'); return; }
+  const vol = appData.volunteers.find(v => v.id === volId);
+
+  const res = await apiPost('addRole', { eventId: selectedEventId, title, volunteerId: volId, volunteerName: vol?.name || '', description: desc, wing: currentUser.wing });
+  if (res !== null) {
+    closeModal('modal-add-role');
+    ['role-title','role-desc'].forEach(id => document.getElementById(id).value = '');
+    showToast('Role added.', 'success');
+    await loadAllData();
+    showLeadEventDetail(selectedEventId);
+  } else showToast('Failed to add role.', 'error');
+}
+
+async function addDeadline() {
+  const task  = document.getElementById('dl-task').value.trim();
+  const date  = document.getElementById('dl-date').value;
+  const volId = document.getElementById('dl-volunteer').value;
+  const notes = document.getElementById('dl-notes').value.trim();
+  if (!task || !date || !volId) { showToast('Task, date and volunteer required.', 'error'); return; }
+  const vol = appData.volunteers.find(v => v.id === volId);
+  const ev  = appData.events.find(e => e.id === selectedEventId);
+
+  const res = await apiPost('addDeadline', { eventId: selectedEventId, eventName: ev?.name||'', task, date, volunteerId: volId, volunteerName: vol?.name||'', notes, wing: currentUser.wing, status: 'Pending' });
+  if (res !== null) {
+    closeModal('modal-add-deadline');
+    ['dl-task','dl-date','dl-notes'].forEach(id => document.getElementById(id).value = '');
+    showToast('Deadline added.', 'success');
+    await loadAllData();
+    showLeadEventDetail(selectedEventId);
+  } else showToast('Failed to add deadline.', 'error');
+}
+
+async function updateBeneficiaries() {
+  const count = document.getElementById('ben-count').value;
+  if (!count && count !== '0') { showToast('Enter a count.', 'error'); return; }
+  const res = await apiPost('updateBeneficiaries', { eventId: selectedEventId, beneficiaries: count });
+  if (res !== null) {
+    closeModal('modal-beneficiaries');
+    showToast('Beneficiaries updated.', 'success');
+    await loadAllData();
+    showLeadEventDetail(selectedEventId);
+  } else showToast('Failed to update.', 'error');
+}
+
+async function markEventCompleted(eventId) {
+  if (!confirm('Mark this event as completed?')) return;
+  const res = await apiPost('updateEventStatus', { eventId, status: 'Completed' });
+  if (res !== null) {
+    showToast('Event marked as completed.', 'success');
+    await loadAllData();
+    showLeadEventDetail(eventId);
+  } else showToast('Failed to update.', 'error');
+}
+
+async function markDeadlineDone(dlId) {
+  const res = await apiPost('updateDeadlineStatus', { deadlineId: dlId, status: 'Completed' });
+  if (res !== null) {
+    showToast('Deadline marked as done.', 'success');
+    await loadAllData();
+    showLeadEventDetail(selectedEventId);
+  } else showToast('Failed.', 'error');
+}
+
+// ─── LEAD VOLUNTEERS ───
+async function loadLeadVolunteers() {
+  await loadAllData();
+  document.getElementById('lead-vol-subtitle').textContent = currentUser.wing + ' Wing Volunteers';
+  const vols = appData.volunteers.filter(v => v.wing === currentUser.wing);
+  const tbody = document.getElementById('lead-vol-tbody');
+  if (!vols.length) { tbody.innerHTML = emptyRow(5, 'No volunteers added yet.'); return; }
+  tbody.innerHTML = vols.map(v => {
+    const roles = appData.roles.filter(r => r.volunteerId === v.id).length;
+    return `
+      <tr class="clickable" onclick="showLeadVolDetail('${v.id}')">
+        <td style="font-weight:600;">${v.name}</td>
+        <td>${v.email}</td>
+        <td>${v.phone}</td>
+        <td>${v.regno}</td>
+        <td><span class="badge badge-primary">${roles} role${roles!==1?'s':''}</span></td>
+      </tr>`;
+  }).join('');
+}
+
+function showLeadVolDetail(volId) {
+  const vol = appData.volunteers.find(v => v.id === volId);
+  if (!vol) return;
+  const roles = appData.roles.filter(r => r.volunteerId === volId);
+  const dls   = appData.deadlines.filter(d => d.volunteerId === volId);
+
+  document.getElementById('lead-vol-list-view').style.display = 'none';
+  const detail = document.getElementById('lead-vol-detail-view');
+  detail.style.display = '';
+  detail.innerHTML = `
+    <button class="detail-back" onclick="loadLeadVolunteers();document.getElementById('lead-vol-list-view').style.display='';document.getElementById('lead-vol-detail-view').style.display='none';">
+      &larr; Back to Volunteers
+    </button>
+    <div class="page-header">
+      <div class="page-title"><h1>${vol.name}</h1><p>${vol.email} &nbsp;&bull;&nbsp; ${vol.phone} &nbsp;&bull;&nbsp; ${vol.regno}</p></div>
+    </div>
+    <div class="tabs">
+      <button class="tab active" onclick="switchTab(this,'tab-lvol-roles')">Roles (${roles.length})</button>
+      <button class="tab" onclick="switchTab(this,'tab-lvol-dls')">Deadlines (${dls.length})</button>
+    </div>
+    <div id="tab-lvol-roles" class="tab-content active">
+      <div class="section-card">
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Role</th><th>Event</th><th>Description</th></tr></thead>
+            <tbody>${roles.length ? roles.map(r=>`<tr><td><strong>${r.title}</strong></td><td>${r.eventName||'—'}</td><td>${r.description||'—'}</td></tr>`).join('') : emptyRow(3,'No roles assigned.')}</tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    <div id="tab-lvol-dls" class="tab-content">
+      <div class="section-card">
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Task</th><th>Event</th><th>Due Date</th><th>Notes</th><th>Status</th></tr></thead>
+            <tbody>${dls.length ? dls.map(d=>`<tr><td>${d.task}</td><td>${d.eventName||'—'}</td><td>${fmtDate(d.date)}</td><td>${d.notes||'—'}</td><td>${statusBadge(d.status)}</td></tr>`).join('') : emptyRow(5,'No deadlines.')}</tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+async function addVolunteer() {
+  const name  = document.getElementById('vol-name').value.trim();
+  const email = document.getElementById('vol-email').value.trim();
+  const phone = document.getElementById('vol-phone').value.trim();
+  const regno = document.getElementById('vol-regno').value.trim();
+  if (!name || !email || !phone || !regno) { showToast('All fields required.', 'error'); return; }
+
+  const res = await apiPost('addVolunteer', { name, email, phone, regno, wing: currentUser.wing });
+  if (res !== null) {
+    closeModal('modal-add-volunteer');
+    ['vol-name','vol-email','vol-phone','vol-regno'].forEach(id => document.getElementById(id).value = '');
+    showToast('Volunteer added.', 'success');
+    await loadLeadVolunteers();
+  } else showToast('Failed to add volunteer.', 'error');
+}
+
+// ─── VOLUNTEER DASHBOARD ───
+async function loadVolunteerDashboard() {
+  await loadAllData();
+  const wing    = currentUser.wing;
+  const volName = currentUser.name;
+  document.getElementById('vol-dash-subtitle').textContent = `${wing} Wing — ${volName}`;
+
+  // Match volunteer by name in their wing
+  const vol = appData.volunteers.find(v => v.wing === wing && v.name.toLowerCase() === volName.toLowerCase());
+
+  if (!vol) {
+    document.getElementById('vol-top-stats').innerHTML = `<div class="stat-card"><div class="stat-value">—</div><div class="stat-label">Not Registered</div></div>`;
+    document.getElementById('vol-roles-tbody').innerHTML = emptyRow(3, 'Your name was not found in the volunteers list. Please contact your team lead.');
+    document.getElementById('vol-deadlines-tbody').innerHTML = emptyRow(5, '');
+    return;
+  }
+
+  const roles = appData.roles.filter(r => r.volunteerId === vol.id);
+  const dls   = appData.deadlines.filter(d => d.volunteerId === vol.id);
+  const pendingDls = dls.filter(d => !d.status || d.status === 'Pending').length;
+
+  document.getElementById('vol-top-stats').innerHTML = `
+    <div class="stat-card"><div class="stat-value">${roles.length}</div><div class="stat-label">Roles Assigned</div></div>
+    <div class="stat-card"><div class="stat-value">${dls.length}</div><div class="stat-label">Total Deadlines</div></div>
+    <div class="stat-card"><div class="stat-value">${pendingDls}</div><div class="stat-label">Deadlines Pending</div></div>
+  `;
+
+  document.getElementById('vol-roles-tbody').innerHTML = roles.length
+    ? roles.map(r=>`<tr><td><strong>${r.title}</strong></td><td>${r.eventName||'—'}</td><td>${r.description||'—'}</td></tr>`).join('')
+    : emptyRow(3,'No roles assigned to you yet.');
+
+  document.getElementById('vol-deadlines-tbody').innerHTML = dls.length
+    ? dls.map(d=>`<tr><td>${d.task}</td><td>${d.eventName||'—'}</td><td>${fmtDate(d.date)}</td><td>${d.notes||'—'}</td><td>${statusBadge(d.status)}</td></tr>`).join('')
+    : emptyRow(5,'No deadlines assigned to you yet.');
+}
+
+// ─── REPORTS ───
+function generateReport() {
+  const type  = document.getElementById('report-type').value;
+  const month = document.getElementById('report-month').value;
+  const year  = document.getElementById('report-year').value || new Date().getFullYear();
+
+  let filteredEvents = appData.events;
+  let label = '';
+
+  if (type === 'monthly' && month) {
+    filteredEvents = filteredEvents.filter(e => e.startDate && e.startDate.slice(0,7) === month);
+    label = 'Monthly Report — ' + new Date(month+'-01').toLocaleDateString('en-GB',{month:'long',year:'numeric'});
+  } else {
+    filteredEvents = filteredEvents.filter(e => e.startDate && e.startDate.slice(0,4) === String(year));
+    label = 'Yearly Report — ' + year;
+  }
+
+  const wings = ['GPT','OPT','PAW','Connect Wide'];
+  let html = `<h2>CAPS Central Campus</h2><p>${label} &nbsp;&bull;&nbsp; Generated on ${new Date().toLocaleDateString('en-GB')}</p>`;
+
+  let totalEvents = 0, totalBen = 0, totalVols = 0;
+  wings.forEach(w => {
+    const we = filteredEvents.filter(e => e.wing === w);
+    const wv = appData.volunteers.filter(v => v.wing === w).length;
+    const wb = we.reduce((s,e) => s + (parseInt(e.beneficiaries)||0), 0);
+    totalEvents += we.length; totalBen += wb; totalVols += wv;
+    html += `
+      <h3>${w} Wing</h3>
+      <table><thead><tr><th>Event Name</th><th>Venue</th><th>Date</th><th>Beneficiaries</th><th>Status</th></tr></thead>
+      <tbody>
+        ${we.length ? we.map(e=>`<tr><td>${e.name}</td><td>${e.venue||'—'}</td><td>${fmtDate(e.startDate)}</td><td>${e.beneficiaries||0}</td><td>${e.status||'Pending'}</td></tr>`).join('') : '<tr><td colspan="5" style="color:var(--text3);">No events.</td></tr>'}
+      </tbody></table>
+      <p style="font-size:12px;color:var(--text2);">Events: ${we.length} &nbsp;&bull;&nbsp; Beneficiaries: ${wb} &nbsp;&bull;&nbsp; Volunteers: ${wv}</p>
+    `;
+  });
+
+  html += `
+    <hr style="border:none;border-top:1px solid var(--border);margin:18px 0;">
+    <h3>Overall Summary</h3>
+    <table><thead><tr><th>Total Events</th><th>Total Beneficiaries</th><th>Total Volunteers</th></tr></thead>
+    <tbody><tr><td>${totalEvents}</td><td>${totalBen}</td><td>${totalVols}</td></tr></tbody></table>
+  `;
+
+  const out = document.getElementById('report-output');
+  out.innerHTML = html;
+  out.style.display = '';
+}
+
+function downloadReportPDF() {
+  const out = document.getElementById('report-output');
+  if (!out || out.style.display === 'none') { showToast('Generate a report first.', 'error'); return; }
+  const win = window.open('', '_blank');
+  win.document.write(`<html><head><title>CAPS Report</title>
+  <style>body{font-family:Arial,sans-serif;padding:32px;font-size:13px;color:#0f172a;}
+  h2{font-size:20px;margin-bottom:4px;}h3{font-size:15px;margin:18px 0 8px;color:#1e40af;}
+  p{color:#64748b;margin-bottom:10px;font-size:12px;}
+  table{width:100%;border-collapse:collapse;margin-bottom:12px;}
+  th,td{padding:8px 10px;border:1px solid #e2e8f0;text-align:left;font-size:12px;}
+  th{background:#f4f6fa;font-weight:700;}hr{border:none;border-top:1px solid #e2e8f0;margin:16px 0;}
+  </style></head><body>${out.innerHTML}</body></html>`);
+  win.document.close();
+  setTimeout(() => win.print(), 500);
+}
+
+function generateLeadReport() {
+  const type  = document.getElementById('lead-report-type').value;
+  const month = document.getElementById('lead-report-month').value;
+  const year  = document.getElementById('lead-report-year').value || new Date().getFullYear();
+  const wing  = currentUser.wing;
+
+  let filteredEvents = appData.events.filter(e => e.wing === wing);
+  let label = '';
+
+  if (type === 'monthly' && month) {
+    filteredEvents = filteredEvents.filter(e => e.startDate && e.startDate.slice(0,7) === month);
+    label = 'Monthly Report — ' + new Date(month+'-01').toLocaleDateString('en-GB',{month:'long',year:'numeric'});
+  } else {
+    filteredEvents = filteredEvents.filter(e => e.startDate && e.startDate.slice(0,4) === String(year));
+    label = 'Yearly Report — ' + year;
+  }
+
+  const wv  = appData.volunteers.filter(v => v.wing === wing).length;
+  const wb  = filteredEvents.reduce((s,e) => s + (parseInt(e.beneficiaries)||0), 0);
+
+  let html = `<h2>CAPS ${wing} Wing Report</h2><p>${label} &nbsp;&bull;&nbsp; Generated on ${new Date().toLocaleDateString('en-GB')}</p>
+    <table><thead><tr><th>Event Name</th><th>Venue</th><th>Date</th><th>Beneficiaries</th><th>Status</th></tr></thead>
+    <tbody>
+      ${filteredEvents.length ? filteredEvents.map(e=>`<tr><td>${e.name}</td><td>${e.venue||'—'}</td><td>${fmtDate(e.startDate)}</td><td>${e.beneficiaries||0}</td><td>${e.status||'Pending'}</td></tr>`).join('') : '<tr><td colspan="5" style="color:#94a3b8;">No events in this period.</td></tr>'}
+    </tbody></table>
+    <hr style="border:none;border-top:1px solid var(--border);margin:14px 0;">
+    <table><thead><tr><th>Total Events</th><th>Total Beneficiaries</th><th>Volunteers</th></tr></thead>
+    <tbody><tr><td>${filteredEvents.length}</td><td>${wb}</td><td>${wv}</td></tr></tbody></table>
+  `;
+
+  const out = document.getElementById('lead-report-output');
+  out.innerHTML = html;
+  out.style.display = '';
+  out.style.background = 'var(--white)';
+  out.style.border = '1px solid var(--border)';
+  out.style.borderRadius = 'var(--radius)';
+  out.style.padding = '28px';
+}
+
+function downloadLeadReportPDF() {
+  const out = document.getElementById('lead-report-output');
+  if (!out || out.style.display === 'none') { showToast('Generate a report first.', 'error'); return; }
+  const win = window.open('', '_blank');
+  win.document.write(`<html><head><title>CAPS ${currentUser.wing} Report</title>
+  <style>body{font-family:Arial,sans-serif;padding:32px;font-size:13px;}
+  h2{font-size:18px;}p{color:#64748b;font-size:12px;margin-bottom:12px;}
+  table{width:100%;border-collapse:collapse;margin-bottom:12px;}
+  th,td{padding:8px 10px;border:1px solid #e2e8f0;text-align:left;font-size:12px;}
+  th{background:#f4f6fa;font-weight:700;}hr{border:none;border-top:1px solid #e2e8f0;margin:12px 0;}
+  </style></head><body>${out.innerHTML}</body></html>`);
+  win.document.close();
+  setTimeout(() => win.print(), 500);
+}
+
+// ─── TABS ───
+function switchTab(btn, contentId) {
+  const parent = btn.closest('.tabs');
+  parent.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  btn.classList.add('active');
+  const container = btn.closest('.page') || btn.closest('[id$="-detail-view"]') || document;
+  container.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+  const el = document.getElementById(contentId);
+  if (el) el.classList.add('active');
+}
+</script>
+</body>
+</html>
